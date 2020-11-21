@@ -252,11 +252,11 @@ def kep3d(epoch:u.year, P:u.year, tperi:u.year, a, e, inc:u.deg, omega:u.deg, an
     # needs to be put back artificially
     # problem with building the np.array below and putting the Quantity through
     # the np.dot() routine
-    
-    (Xe, Ye, Ze)    = np.dot(mat, np.array([X.value,Y.value,0]))
+
+    (Xe, Ye, Ze)    = np.dot(mat, np.array([X.value,Y.value,np.zeros(X.shape)]))
     #blog = np.array([X,Y,np.zeros(X.size)]) * X.unit
     #(Xe, Ye, Ze)    = np.dot(mat, blog)
-    (Xev, Yev, Zev) = np.dot(mat, np.array([Xv.value,Yv.value,0]))
+    (Xev, Yev, Zev) = np.dot(mat, np.array([Xv.value,Yv.value,np.zeros(Xv.shape)]))
 
     Xs = -Ye * X.unit
     Ys =  Xe * X.unit
@@ -519,11 +519,39 @@ def Ptoa(P:u.year, m1:u.M_sun, m2:u.M_jup)->u.au:
     
     return aa
 
+
+@u.quantity_input
+def rlap(m1:u.M_sun, m2:u.M_jup, a:u.au, e, r2:u.R_jup, J2=0.1)->u.au:
+    """calculate Laplace radius for secondary companion
+
+    Args:
+        m1, m2: Primary and secondary masses
+    a: semi-major axis for m2
+    e: eccentricity of m2
+    r2: radius of m2
+    J2: gravitational component
+
+    Returns:
+        a: Laplace radius (torque from bulge and star are same magnitude)
+
+    Reference: Speedie and Zanazzi (2020) MNRAS Eq. 4.
+
+    >>> import astropy.units as u
+    >>> rlap(1.0*u.M_sun, 10.0*u.M_jup, 9.0*u.au, 0.05, 1.7*u.R_jup, 0.1)
+    <Quantity 0.06198713 AU>
+    """
+    
+    aa = 1 - e*e
+    bb = 2*J2*r2*r2*a*a*a*(m2/m1)
+    cc = bb * np.power(aa,3./2.)
+    return (np.power(cc, 1./5.)).to(u.au)
+
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
     from astropy.visualization import quantity_support
     quantity_support()
 
+    # run inline tests in the documentation
     import doctest
     doctest.testmod()
 
