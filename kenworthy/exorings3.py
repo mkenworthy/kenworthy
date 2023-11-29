@@ -220,8 +220,8 @@ def ellipse_strip(r, tau, y, hjd_central, i, phi, star, width, xrang=200.):
     if (ny%2 == 0):
         logger.warning('stellar disk array has even number of elements.')
 
-    yc = np.int((ny - 1) / 2.)
-    xc = np.int((nx - 1) / 2.)
+    yc = int((ny - 1) / 2.)
+    xc = int((nx - 1) / 2.)
 
     agr = np.mgrid[:ny, :nx].astype(float)
 
@@ -478,7 +478,8 @@ def ring_patch(r1, r2, i_deg, phi_deg, dr=([0, 0])):
     # actual parameters are irrelevant - get_path()
     # returns only a normalised Bezier curve ellipse
     # which we then subsequently transform
-    e1 = patches.Ellipse((1, 1), 1, 1, 0)
+#    e1 = patches.Ellipse((1, 1), 1, 1, 0) # not valid with matplotlib >=8.3
+    e1 = patches.Ellipse((1, 1), 1, 1)
 
     # get the Path points for the ellipse (8 Bezier curves with 3
     # additional control points)
